@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+        "multi_robile_controller_node=multi_robile.multi_robot_controller:main"
         ],
     },
 )
