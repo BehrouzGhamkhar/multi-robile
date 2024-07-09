@@ -69,6 +69,7 @@ def generate_launch_description():
         executable="static_transform_publisher",
         name="static_transform_publisher",
         arguments=["0", "0", "0", "0", "0", "0", "map", "odom"],
+
     )
 
     gzserver_cmd = IncludeLaunchDescription(
@@ -99,6 +100,7 @@ def generate_launch_description():
             "platform_config:=4_wheel_config",
             " ",
             "movable_joints:=False",
+
         ]
     )
 
@@ -121,6 +123,7 @@ def generate_launch_description():
                 output="screen",
                 namespace=namespace,
             ),
+
             Node(
                 package='gazebo_ros',
                 executable='spawn_entity.py',
@@ -128,10 +131,13 @@ def generate_launch_description():
                            '-entity', namespace,
                            '-x', str(x_pose),
                            '-y', str(y_pose),
-                           '-z', '0.0'
+                           '-z', '0.0',
+                           '-robot_namespace', namespace
                            ],
                 output='screen'
-            ),
+            )
+
+            ,
             Node(
                 package="tf2_ros",
                 executable="static_transform_publisher",
@@ -146,13 +152,14 @@ def generate_launch_description():
     def generate_robot_descriptions(robot_count):
         robot_spawning_cmds = []
         for i in range(robot_count):
-            namespace = f'robile_{i}'
+            namespace = f'robile_{i + 1}'
             x_pose = float(i) * 2.0  # Space robots 2 meters apart
             y_pose = 0.0
             robot_spawning_cmds.append(create_robot_spawn_group(namespace, x_pose, y_pose))
+
         return robot_spawning_cmds
 
-    robots = generate_robot_descriptions(2)
+    robots = generate_robot_descriptions(3)
 
     rviz_cmd = Node(
         package='rviz2',
@@ -169,7 +176,7 @@ def generate_launch_description():
         gzserver_cmd,
         gzclient_cmd,
         *robots,
-        # map_server,
-        # lifecycle_manager,
+        map_server,
+        lifecycle_manager,
         tf2_ros_map_to_odom,
     ])
